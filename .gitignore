@@ -14,7 +14,9 @@ bin/
 # or
 */bin/*
 
-# Ignore debug file and gprof output
+# Ignore compile file, debug file, zip file and gprof output
 *.txt
 !/data.txt
 *.out
+*.o
+*.zip
