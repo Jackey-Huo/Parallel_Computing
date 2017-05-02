@@ -1,6 +1,6 @@
+
 #include <omp.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <sys/time.h>
 
 static long long num_steps = 10000000;
@@ -8,34 +8,22 @@ double step;
 
 int main()
 {
-    int i, ret;
-    double x, tmp_x, pi, sum = 0.0;
+    int i;
+    double x, pi, sum = 0.0;
 
     struct timeval start, stop;
 
     step = 1.0/(double)num_steps;
-    ret = gettimeofday(&start, NULL);
-    if(ret != 0)
-    {
-        printf("start time error, exit program\n");
-        exit(-1);
-    }
+    gettimeofday(&start, NULL);
 
-    #pragma omp parallel for
+    #pragma omp parallel for schedule(dynamic) reduction(+:sum)
     for(i=0; i < num_steps; ++i)
     {
         x = (i + 0.5) * step;
-        tmp_x = 4.0/(1.0 + x*x);
-        #pragma omp atomic
-        sum = sum + tmp_x;
+        sum = sum + 4.0/(1.0 + x*x);
     }
 
-    ret = gettimeofday(&stop, NULL);
-    if(ret != 0)
-    {
-        printf("stop time error, exit program\n");
-        exit(-1);
-    }
+    gettimeofday(&stop, NULL);
     pi = step * sum;
 
     printf("pi = %20.17lf\n", pi);
